@@ -613,6 +613,7 @@ namespace UniGit
 						GitManager.Update(true);
 						editorWindow.Close();
 						Profiler.EndSample();
+						AssetDatabase.Refresh();
 					}
 				}
 				EditorGUILayout.Space();
