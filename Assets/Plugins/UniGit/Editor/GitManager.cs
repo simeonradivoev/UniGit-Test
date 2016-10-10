@@ -108,6 +108,7 @@ namespace UniGit
 			EditorApplication.projectWindowItemOnGUI += CustomIcons;
 
 			GitLfsManager.Load();
+			GitHookManager.Load();
 		}
 
 		internal static void Update()
