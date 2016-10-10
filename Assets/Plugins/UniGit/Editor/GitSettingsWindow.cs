@@ -437,6 +437,7 @@ namespace UniGit
 			{
 				EditorGUILayout.HelpBox("You should specify a LFS server URL",MessageType.Warning);
 			}
+
 			DoConfigStringField(new GUIContent("URL"), "lfs.url", "");
 
 			EditorGUILayout.Space();
