@@ -12,7 +12,7 @@ namespace UniGit
 	{
 		private RemoteCollection remotes;
 		private BranchCollection branches;
-		private RemoteEntry[] remoteCacheList;
+		private RemoteEntry[] remoteCacheList = new RemoteEntry[0];
 		private string[] remoteNames;
 		private Rect addRepositoryButtonRect;
 		[SerializeField] private SettingTabEnum tab;
@@ -93,6 +93,11 @@ namespace UniGit
 			{
 				tab = SettingTabEnum.Branches;
 			}
+			value = GUILayout.Toggle(tab == SettingTabEnum.LFS, new GUIContent("LFS"), "toolbarbutton");
+			if (value)
+			{
+				tab = SettingTabEnum.LFS;
+			}
 			value = GUILayout.Toggle(tab == SettingTabEnum.Security, new GUIContent("Security"), "toolbarbutton");
 			if (value)
 			{
@@ -103,21 +108,23 @@ namespace UniGit
 
 			EditorGUILayout.Space();
 
-			if (tab == SettingTabEnum.Remotes)
+			switch (tab)
 			{
-				DoRemotes(current);
-			}
-			else if(tab == SettingTabEnum.Branches)
-			{
-				DoBranches(current);
-			}
-			else if (tab == SettingTabEnum.Security)
-			{
-				DoSecurity(current);
-			}
-			else
-			{
-				DoGeneral(current);
+				case SettingTabEnum.Remotes:
+					DoRemotes(current);
+					break;
+				case SettingTabEnum.Branches:
+					DoBranches(current);
+					break;
+				case SettingTabEnum.LFS:
+					DoLFS(current);
+					break;
+				case SettingTabEnum.Security:
+					DoSecurity(current);
+					break;
+				default:
+					DoGeneral(current);
+					break;
 			}
 
 			EditorGUILayout.Space();
@@ -396,6 +403,56 @@ namespace UniGit
 			}
 		}
 
+		#region LFS
+
+		private Rect trackFileRect;
+
+		private void DoLFS(Event current)
+		{
+			if (!GitLfsManager.Installed)
+			{
+				EditorGUILayout.HelpBox("Git LFS not installed",MessageType.Warning);
+				if (GUILayout.Button(new GUIContent("Download")))
+				{
+					Application.OpenURL("https://git-lfs.github.com/");
+				}
+				return;
+			}
+
+			if (!GitLfsManager.CheckInitialized())
+			{
+				EditorGUILayout.HelpBox("Git LFS not Initialized", MessageType.Info);
+				if (GUILayout.Button(new GUIContent("Initialize")))
+				{
+					GitLfsManager.Initialize();
+				}
+				return;
+			}
+
+			foreach (var info in GitLfsManager.TrackedInfo)
+			{
+				GUILayout.Label(new GUIContent(info.Extension),"ShurikenModuleTitle");
+				info.Extension = EditorGUILayout.DelayedTextField(new GUIContent("Extension"),info.Extension);
+				info.Type = (GitLfsTrackedInfo.TrackType)EditorGUILayout.EnumPopup(new GUIContent("Type"), info.Type);
+
+				if (info.IsDirty)
+				{
+					GitLfsManager.SaveTracking();
+					break;
+				}
+			}
+
+			if (GUILayout.Button("Track File"))
+			{
+				PopupWindow.Show(trackFileRect,new GitLfsTrackPopupWindow(this));
+			}
+			if (current.type == EventType.Repaint)
+			{
+				trackFileRect = GUILayoutUtility.GetLastRect();
+			}
+		}
+		#endregion
+
 		private void DoRemotes(Event current)
 		{
 			int remoteCount = remotes.Count();
@@ -517,6 +574,7 @@ namespace UniGit
 			General,
 			Remotes,
 			Branches,
+			LFS,
 			Security
 		}
 

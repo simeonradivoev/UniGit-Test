@@ -106,6 +106,8 @@ namespace UniGit
 			AutoFetchChanges();
 
 			EditorApplication.projectWindowItemOnGUI += CustomIcons;
+
+			GitLfsManager.Load();
 		}
 
 		internal static void Update()
