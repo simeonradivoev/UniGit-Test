@@ -87,6 +87,8 @@ namespace UniGit
 		#region Handlers
 		protected LibGit2Sharp.Credentials CredentialsHandler(string url, string user, SupportedCredentialTypes supported)
 		{
+			Debug.LogFormat("url: {0}, user: {1}, type: {2}",url,user,supported);
+
 			if (supported == SupportedCredentialTypes.UsernamePassword)
 			{
 				string username = credentials.Username;

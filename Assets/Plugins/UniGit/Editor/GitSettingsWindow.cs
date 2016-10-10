@@ -429,6 +429,18 @@ namespace UniGit
 				return;
 			}
 
+			GUILayout.Label(new GUIContent("Settings"), "ProjectBrowserHeaderBgTop");
+
+
+			string url = GitManager.Repository.Config.GetValueOrDefault("lfs.url", "");
+			if (string.IsNullOrEmpty(url))
+			{
+				EditorGUILayout.HelpBox("You should specify a LFS server URL",MessageType.Warning);
+			}
+			DoConfigStringField(new GUIContent("URL"), "lfs.url", "");
+
+			EditorGUILayout.Space();
+
 			foreach (var info in GitLfsManager.TrackedInfo)
 			{
 				GUILayout.Label(new GUIContent(info.Extension),"ShurikenModuleTitle");

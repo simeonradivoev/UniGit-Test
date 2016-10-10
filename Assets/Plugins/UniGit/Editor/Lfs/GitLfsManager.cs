@@ -40,6 +40,8 @@ namespace UniGit
 
 		public static void Update()
 		{
+			RegisterFilter();
+
 			if (File.Exists(GitManager.RepoPath + @"\.gitattributes"))
 			{
 				using (TextReader file = File.OpenText(GitManager.RepoPath + @"\.gitattributes"))
@@ -64,12 +66,15 @@ namespace UniGit
 
 		private static void RegisterFilter()
 		{
-			var filteredFiles = new List<FilterAttributeEntry>
+			if (GlobalSettings.GetRegisteredFilters().All(f => f.Name != "lfs"))
+			{
+				var filteredFiles = new List<FilterAttributeEntry>
 			{
 				new FilterAttributeEntry("lfs")
 			};
-			var filter = new GitLfsFilter("lfs", filteredFiles);
-			GlobalSettings.RegisterFilter(filter);
+				var filter = new GitLfsFilter("lfs", filteredFiles);
+				GlobalSettings.RegisterFilter(filter);
+			}
 		}
 
 		public static bool Initialize()
