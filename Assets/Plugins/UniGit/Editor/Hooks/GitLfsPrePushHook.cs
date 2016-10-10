@@ -15,7 +15,7 @@ namespace Assets.Plugins.UniGit.Editor.Hooks
 				process.StartInfo.FileName = "git-lfs";
 				process.StartInfo.Arguments = "pre-push origin";
 				process.StartInfo.WorkingDirectory = GitManager.RepoPath;
-				process.StartInfo.CreateNoWindow = true;
+				process.StartInfo.CreateNoWindow = false;
 				process.StartInfo.UseShellExecute = false;
 				process.StartInfo.RedirectStandardInput = true;
 				process.StartInfo.RedirectStandardOutput = true;
@@ -26,6 +26,7 @@ namespace Assets.Plugins.UniGit.Editor.Hooks
 				{
 					string value = string.Format("{0} {1} {2} {3}\n", update.SourceRefName, update.SourceObjectId.Sha, update.DestinationRefName, update.DestinationObjectId.Sha);
 					process.StandardInput.Write(value);
+					UnityEngine.Debug.Log(value);
 				}
 
 				process.StandardInput.Write("\0");
@@ -38,7 +39,7 @@ namespace Assets.Plugins.UniGit.Editor.Hooks
 				if (!string.IsNullOrEmpty(output)) Console.WriteLine("git-lfs pre-push results: " + output);
 				if (!string.IsNullOrEmpty(outputErr))
 				{
-					Console.WriteLine("git-lfs pre-push error results: " + outputErr);
+					UnityEngine.Debug.Log("git-lfs pre-push error results: " + outputErr);
 					return false;
 				}
 			}
