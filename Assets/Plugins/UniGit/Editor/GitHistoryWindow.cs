@@ -192,7 +192,14 @@ namespace UniGit
 			}
 			if (GUI.Button(btRect, pushButtonContent, "toolbarbutton"))
 			{
-				ScriptableWizard.DisplayWizard<GitPushWizard>("Push", "Push").Init(selectedBranch.LoadBranch());
+				if (GitExternalManager.TakePush())
+				{
+					GitManager.Update();
+				}
+				else
+				{
+					ScriptableWizard.DisplayWizard<GitPushWizard>("Push", "Push").Init(selectedBranch.LoadBranch());
+				}
 			}
 			btRect = new Rect(btRect.x + 64, btRect.y, 64, btRect.height);
 			GUI.enabled = !hasConflicts;
@@ -201,7 +208,16 @@ namespace UniGit
 			pullButtonContent.text = "Pull";
 			if (GUI.Button(btRect, pullButtonContent, "toolbarbutton"))
 			{
-				ScriptableWizard.DisplayWizard<GitPullWizard>("Pull", "Pull").Init(selectedBranch.LoadBranch());
+				Branch branch = selectedBranch.LoadBranch();
+				if (GitExternalManager.TakePull())
+				{
+					AssetDatabase.Refresh();
+					GitManager.Update();
+				}
+				else
+				{
+					ScriptableWizard.DisplayWizard<GitPullWizard>("Pull", "Pull").Init(branch);
+				}
 			}
 			btRect = new Rect(btRect.x + 70, btRect.y, 64, btRect.height);
 			GUIContent fetchButtonContent = EditorGUIUtility.IconContent("UniGit/GitFetch");
@@ -209,7 +225,15 @@ namespace UniGit
 			fetchButtonContent.text = "Fetch";
 			if (GUI.Button(btRect, fetchButtonContent, "toolbarbutton"))
 			{
-				ScriptableWizard.DisplayWizard<GitFetchWizard>("Fetch", "Fetch").Init(selectedBranch.LoadBranch());
+				Branch branch = selectedBranch.LoadBranch();
+				if (GitExternalManager.TakeFetch(branch.Remote.Name))
+				{
+					GitManager.Update();
+				}
+				else
+				{
+					ScriptableWizard.DisplayWizard<GitFetchWizard>("Fetch", "Fetch").Init(branch);
+				}
 			}
 			btRect = new Rect(btRect.x + 64, btRect.y, 64, btRect.height);
 			GUIContent mergeButtonContent = EditorGUIUtility.IconContent("UniGit/GitMerge");
@@ -217,7 +241,14 @@ namespace UniGit
 			mergeButtonContent.text = "Merge";
 			if (GUI.Button(btRect, mergeButtonContent, "toolbarbutton"))
 			{
-				ScriptableWizard.DisplayWizard<GitMergeWizard>("Merge", "Merge");
+				if (GitExternalManager.TakeMerge())
+				{
+					GitManager.Update();
+				}
+				else
+				{
+					ScriptableWizard.DisplayWizard<GitMergeWizard>("Merge", "Merge");
+				}
 			}
 			GUI.enabled = true;
 			btRect = new Rect(rect.x + rect.width - 64, btRect.y, 64, btRect.height);
